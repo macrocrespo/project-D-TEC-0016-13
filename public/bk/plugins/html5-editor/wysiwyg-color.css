@@ -1,0 +1,138 @@
+body.wysihtml5-editor.form-control {
+  border: none !important;
+  padding: 5px 0px;
+}
+.wysiwyg-font-size-smaller {
+  font-size: smaller;
+}
+
+.wysiwyg-font-size-larger {
+  font-size: larger;
+}
+
+.wysiwyg-font-size-xx-large {
+  font-size: xx-large;
+}
+
+.wysiwyg-font-size-x-large {
+  font-size: x-large;
+}
+
+.wysiwyg-font-size-large {
+  font-size: large;
+}
+
+.wysiwyg-font-size-medium {
+  font-size: medium;
+}
+
+.wysiwyg-font-size-small {
+  font-size: small;
+}
+
+.wysiwyg-font-size-x-small {
+  font-size: x-small;
+}
+
+.wysiwyg-font-size-xx-small {
+  font-size: xx-small;
+}
+
+.wysiwyg-color-black {
+  color: inherit;
+  background: #fff;
+  padding: inherit;
+  margin-bottom: 0px;
+  display: inline;
+}
+
+.wysiwyg-color-gray {
+  color: #fff;
+  background: #c9c9c9;
+  padding: 5px;
+  margin-bottom: 5px;
+  display: inline-block;
+}
+
+.wysiwyg-color-red {
+  color: #f2251a;
+  padding: 5px;
+  border: solid 1px #f2251a;
+  display: inline-block;
+  margin-bottom: 5px;
+}
+
+.wysiwyg-color-purple {
+  color: #a7248e;
+  background: #f9d1f1;
+  padding: 5px;
+  display: inline-block;
+  margin-bottom: 5px;
+}
+
+.wysiwyg-color-green {
+  color: #17ad42;
+  background: #f0faf3;
+  padding: 5px;
+  margin-bottom: 5px;
+  display: inline-block;
+  border: solid 1px #18c248;
+}
+
+.wysiwyg-color-yellow {
+  color: #fad500;
+  background: #000;
+  padding: 5px;
+  margin-bottom: 5px;
+  display: inline-block;
+}
+
+.wysiwyg-color-blue {
+  color: #0e71c8;
+  padding: 5px;
+  margin-bottom: 5px;
+  display: inline-block;
+  border: solid 1px #0e71c8;
+}
+
+.wysiwyg-color-orange {
+  color: #e06f08;
+  background: #f5e0cd;
+  padding: 5px;
+  margin-bottom: 5px;
+  display: inline-block;
+}
+
+.wysiwyg-text-align-right {
+  text-align: right;
+}
+
+.wysiwyg-text-align-center {
+  text-align: center;
+}
+
+.wysiwyg-text-align-left {
+  text-align: left;
+}
+
+.wysiwyg-text-align-justify {
+  text-align: justify;
+}
+
+.wysiwyg-float-left {
+  float: left;
+  margin: 0 8px 8px 0;
+}
+
+.wysiwyg-float-right {
+  float: right;
+  margin: 0 0 8px 8px;
+}
+
+.wysiwyg-clear-right {
+  clear: right;
+}
+
+.wysiwyg-clear-left {
+  clear: left;
+}

@@ -6,7 +6,7 @@
         <div id="loginform">
             <div class="logo">
                 <span class="db"><img src="{{ asset('bk/images/logo.png') }}" alt="D-TEC" /></span>
-                <h5 class="font-medium m-t-10 m-b-10">Sistema D-TEC 0016/13</h5>
+                <h5 class="font-medium m-t-10 m-b-10">{{ Config::get('backend.backend_name') }} 0016/13</h5>
             </div>
             <!-- Form -->
             <div class="row">
@@ -15,7 +15,7 @@
                         @csrf
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon1"><i class="ti-user"></i></span>
+                                <span class="input-group-text" id="basic-addon1"><i class="fas fa-envelope"></i></span>
                             </div>
                             <input id="email" type="email" class="form-control form-control-lg @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus placeholder="Email" aria-label="Email" aria-describedby="basic-addon1">
                             @error('email')
@@ -26,7 +26,7 @@
                         </div>
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon2"><i class="ti-pencil"></i></span>
+                                <span class="input-group-text" id="basic-addon2"><i class="fas fa-key"></i></span>
                             </div>
                             <input id="password" type="password" class="form-control form-control-lg @error('password') is-invalid @enderror" name="password" required autocomplete="current-password" placeholder="Contraseña" aria-label="Contraseña" aria-describedby="basic-addon1">
                             @error('password')

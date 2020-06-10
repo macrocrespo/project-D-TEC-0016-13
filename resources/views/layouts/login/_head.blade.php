@@ -6,8 +6,8 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('bk/images/favicon.png') }}">
-    <title>Sistema D-TEC - {{ __('Login') }}</title>
+    <link rel="icon" type="image/icon" sizes="16x16" href="{{ asset('bk/images/favicon.ico') }}">
+    <title>{{ Config::get('backend.backend_name') }} - {{ __('Login') }}</title>
     <!-- Custom CSS -->
     <link href="{{ asset('bk/css/style.css') }}" rel="stylesheet">
     <!--[if lt IE 9]>

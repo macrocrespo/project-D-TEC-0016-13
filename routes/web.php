@@ -1,36 +1,67 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Config;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
+$admin_url = Config::get('backend.admin_url');
 
-Route::get('/', function () {
-    return view('welcome');
-});
+/* --------------------------- FRONT-END --------------------------- */
 
+Route::get('/', 'Frontend\InicioController@index')->name('fe.inicio');
+
+/* --------------------------- BACK-END --------------------------- */
+
+// Autenticación
 Auth::routes();
 
 // Panel de control
-Route::get('/inicio', 'InicioController@index')->name('inicio');
-Route::get('/demo', 'InicioController@demo')->name('demo');
+Route::prefix($admin_url)->group(function () {
 
-/*
-Route::prefix('admin')->group(function () {
+    // Panel de control
+    Route::get('', 'Backend\InicioController@index')->name('inicio');
+
+    // Usuarios
+    $url = 'usuarios'; $c = 'Backend\UsuariosController';
+    $f = 'list';    Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    $f = 'delete';  Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    $f = 'verify';  Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    Route::resource($url, $c);
+
+    // Notas
+    $url = 'notas'; $c = 'Backend\NotasController';
+    $f = 'list';    Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    $f = 'delete';  Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    $f = 'verify';  Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    Route::resource($url, $c);
+
+    // Tipos de notas
+    $url = 'tipo_notas'; $c = 'Backend\Tipo_notasController';
+    $f = 'list';    Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    $f = 'delete';  Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    $f = 'verify';  Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    Route::resource($url, $c);
+
+    // Informes comunes
+    $url = 'informes_comunes'; $c = 'Backend\Informes_comunesController';
+    $f = 'list';            Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    $f = 'delete';          Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    $f = 'verify';          Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    $f = 'images_add';      Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    $f = 'images_list';     Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    $f = 'images_delete';   Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    Route::resource($url, $c);
+
 });
-*/
 
-// Usuarios
-$url = 'usuarios'; $controller = 'UsuariosController';
-Route::post($url.'/list', $controller.'@list')->name($url.'.list');
-Route::post($url.'/delete', $controller.'@delete')->name($url.'.delete');
-Route::post($url.'/verify', $controller.'@verify')->name($url.'.verify');
-Route::resource($url, $controller);
+/* RESOURCE ROUTES
+
+Verb          Path                        Action  Route Name
+GET           /users                      index   users.index
+GET           /users/create               create  users.create
+POST          /users                      store   users.store
+GET           /users/{user}               show    users.show
+GET           /users/{user}/edit          edit    users.edit
+PUT|PATCH     /users/{user}               update  users.update
+DELETE        /users/{user}               destroy users.destroy
+
+*/

@@ -1,0 +1,131 @@
+div.dataTables_wrapper div.dataTables_info {
+    padding-top: 5px;
+    float: left;
+}
+.page-link {
+    padding: 5px 9px;
+}
+.table.dataTable thead .sorting::before,
+.table.dataTable thead .sorting::after,
+table.dataTable thead .sorting_asc::before,
+table.dataTable thead .sorting_asc::after,
+table.dataTable thead .sorting_desc::before,
+table.dataTable thead .sorting_desc::after {
+    top: 3px;
+}
+
+label {
+    padding-top: 5px;
+}
+.select2-results__option {
+    min-height: 25px;
+}
+.select2-container--default .select2-selection--multiple {
+    height: 78px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+    border: solid rgba(0, 0, 0, 0.25) 1px;
+    overflow-y: auto;
+    min-height: 78px;
+    overflow-x: hidden;
+}
+.select2-container--default .select2-results__group {
+    border-bottom: solid 2px #ccc;
+    border-top: solid 2px #ccc;
+    margin: 10px 0px;
+    background: #343a40;
+    color: #f1f1f1;
+    font-size: 110%;
+}
+iframe.wysihtml5-sandbox {
+    width: 100% !important;
+}
+.form-control .fileinput-filename {
+    padding-left: 32px;
+}
+.fileinput .img-thumbnail {
+    margin-bottom: 0px;
+    margin-top: 5px;
+    width: 100%;
+    cursor: pointer;
+}
+.fileinput .img-thumbnail img {
+    width: auto;
+    max-height: 150px;
+}
+small, .small {
+    font-size: 90%;
+}
+.row_details_img {
+    display: inherit; 
+    margin-bottom: 0px;
+    cursor: pointer;
+}
+.fileinput .btn-delete {
+    position: absolute;
+    margin-left: -38px;
+    bottom: 4px;
+}
+.label.label-lg {
+    font-size: 90%;
+}
+a.image-list {
+    cursor: pointer;
+}
+a.delete-image-list {
+    width: 40px;
+    position: absolute;
+    right: 0;
+    bottom: 0px;
+}
+/*
+.navbar-brand img.logo-icon {
+    height: 50px;
+}
+.navbar-brand img.dark-logo {
+    height: 40px;
+    margin-top: 10px;
+    margin-left: -25px;
+}
+.dataTables_wrapper .dataTables_length {
+    float: left;
+    margin-right: 20px;
+}
+.dataTables_wrapper .dataTables_paginate {
+    font-size: 13px;
+}
+
+.dataTables_wrapper {
+    padding-top: 0px;
+}
+.btn-action {
+    padding-top: 3px !important;
+}
+.btn-action i {
+    float: left;
+    margin-top: 3px;
+    margin-right: 5px;
+}
+.switch {
+    margin-top: 8px;
+    margin-bottom: 10px;
+}
+.form-control {
+    padding-top: .2rem !important;
+}
+.table td, .table th {
+    padding: .1rem .5rem .3rem !important;
+    vertical-align: middle !important;
+}
+.btn-group, .btn-group-vertical {
+    margin-top: 2px;
+}
+.img_detalles {
+    cursor: pointer;
+}
+.img_detalles .img-thumbnail {
+    height: 40px;
+}
+*/

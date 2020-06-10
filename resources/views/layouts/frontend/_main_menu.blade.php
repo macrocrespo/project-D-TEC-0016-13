@@ -8,7 +8,7 @@
                     </a>
                 </div>
                 <!-- Main menu-->
-                <div class="menu_wrapper" style="width: 100%">
+                <div class="menu_wrapper" style="width: 100%; background: #fff;">
                     <nav id="menu">
                         <ul id="menu-main-menu" class="menu">
                             <li class="current-menu-item">
