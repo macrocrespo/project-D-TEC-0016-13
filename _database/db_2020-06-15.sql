@@ -508,11 +508,11 @@ CREATE TABLE IF NOT EXISTS `users` (
 INSERT INTO `users` (`id`, `name`, `email`, `domicilio`, `codigo_perfil`, `rol_id`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
 (1, 'Admin', 'admin@admin.com', NULL, NULL, 1, NULL, '$2y$10$u1fwrSBwcxJQ3KIKVpH2S.Y5yAPF8LTQ1u6Fj2Aklfecb1VFnT1YO', 's0xgLNUQ63MBnIBVdkrW195N4HTUdMBSXbkacHAZGBqG5ZOKsyZDHQJeqdN0', '2020-03-15 23:46:53', '2020-03-15 23:46:53'),
 (2, 'Karina Herrera', 'karinaherrera@gmail.com', NULL, NULL, 1, NULL, '$2y$10$Qh4iWBvcO7jb8nmg2h6wkuYAuINsBcQMnqQ40ouTqQ5YFb4Z0.Cni', NULL, '2020-03-16 16:58:07', '2020-03-16 16:58:07'),
-(3, 'Gladys Fortea', 'gladysfortea@gmail.com', 'barrio fraternidad', NULL, 1, NULL, 'chicha', NULL, NULL, NULL),
-(4, 'Eugenia Figueroa', 'meugeniaf83@gmail.com', 'barrio Ramon Carrillo', 'D-TEC 0016/13-C5-DR ', 3, NULL, 'mariaeugenia', NULL, NULL, NULL),
-(5, 'Teresita Vidal', 'teresitavidal@gmail.com', 'barrio Ramon Carrillo', 'D-TEC 0016/13-C5- PA', 4, NULL, '', NULL, NULL, NULL),
-(6, 'Ada Albanesi', 'adaalbanesi@gmail.com', 'barrio Ramon Carrillo', NULL, 2, NULL, 'adaalbanesi', NULL, NULL, NULL),
-(7, 'Franco Raul Fernández', 'francofernadez@gmail.com', 'barrio Ramon Carrillo', 'D-TEC 0016/13-C5-PAF 10', 4, NULL, 'franco', NULL, NULL, '2020-05-24 04:39:19');
+(3, 'Gladys Fortea', 'gladysfortea@gmail.com', 'barrio fraternidad', NULL, 1, NULL, '$2y$10$.VU9fXpEQMT56neRiX0L4OwwgIzH7UEI1h.5C0aLUmLNWsArjMnia', NULL, NULL, NULL),
+(4, 'Eugenia Figueroa', 'meugeniaf83@gmail.com', 'barrio Ramon Carrillo', 'D-TEC 0016/13-C5-DR ', 3, NULL, '$2y$10$FPaPXY/EEpOFvpvKuxote.laX0iFFeivoPRT7vflnnSMjjF53yPVW', NULL, NULL, NULL),
+(5, 'Teresita Vidal', 'teresitavidal@gmail.com', 'barrio Ramon Carrillo', 'D-TEC 0016/13-C5- PA', 4, NULL, '$2y$10$sj4dMZ3BL7jkWsy299ZW2ODdAbgQGTb1LwgTQ9ZRqo0c2rfvomzQK', NULL, NULL, NULL),
+(6, 'Ada Albanesi', 'adaalbanesi@gmail.com', 'barrio Ramon Carrillo', NULL, 2, NULL, '$2y$10$cHqbQ8qd6FibX3J4jF1TC.SxrpJxhNNILjvRJIS59Aj.dwEwHCavi', NULL, NULL, NULL),
+(7, 'Franco Raul Fernández', 'francofernadez@gmail.com', 'barrio Ramon Carrillo', 'D-TEC 0016/13-C5-PAF 10', 4, NULL, '$2y$10$oqLHq5W9bKFRYZlvg13EX.WL2qZSbx/7QYVGCU3S52sfkncKeX.PK', NULL, NULL, '2020-05-24 04:39:19');
 
 --
 -- Restricciones para tablas volcadas
