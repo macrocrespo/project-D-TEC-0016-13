@@ -80,17 +80,19 @@
                     </ul>
                 </li>
 
-                <li class="nav-small-cap">
-                    <i class="mdi mdi-dots-horizontal"></i>
-                    <span class="hide-menu">Configuración</span>
-                </li>
+                @if ($user->rol_id == 1)
+                    <li class="nav-small-cap">
+                        <i class="mdi mdi-dots-horizontal"></i>
+                        <span class="hide-menu">Configuración</span>
+                    </li>
 
-                <li class="sidebar-item @if (isset($active['usuarios'])) selected @endif">
-                    <a class="sidebar-link waves-effect waves-dark sidebar-link @if (isset($active['usuarios'])) active @endif" href="{{ route('usuarios.index') }}" aria-expanded="false">
-                        <i class="fas fa-users"></i>
-                        <span class="hide-menu">Usuarios</span>
-                    </a>
-                </li>
+                    <li class="sidebar-item @if (isset($active['usuarios'])) selected @endif">
+                        <a class="sidebar-link waves-effect waves-dark sidebar-link @if (isset($active['usuarios'])) active @endif" href="{{ route('usuarios.index') }}" aria-expanded="false">
+                            <i class="fas fa-users"></i>
+                            <span class="hide-menu">Usuarios</span>
+                        </a>
+                    </li>
+                @endif
             </ul>
         </nav>
         <!-- End Sidebar navigation -->

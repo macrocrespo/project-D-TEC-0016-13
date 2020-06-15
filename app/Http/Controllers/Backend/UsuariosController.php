@@ -93,14 +93,18 @@ class UsuariosController extends Controller
      */
     public function list()
     {
+        $user = Auth::user();
         // Obtener los registros de la base de datos
-        $registros = User::orderBy('name', 'asc')->get();
+        $registros = ($user->rol_id == 1) ? 
+                        User::orderBy('name', 'asc')->get() : 
+                        User::where('rol_id','>', 1)->orderBy('name', 'asc')->get();
 
         // Formatear los registros para adaptar los valores a mostrar en el listado
         $valores = array();
         foreach ($registros as $r)
         {
             $valores[$r->id] = array(
+                'imagen' => '<img class="img-list" src="'.asset('bk/images/users/user'.$r->id.'.png').'" />',
                 'name' => $r->name,
                 'email' => $r->email,
                 'rol_id' => $r->rol->nombre
@@ -114,6 +118,7 @@ class UsuariosController extends Controller
             'controlador'   => $this->controller,
             'registros'     => $valores,
             'no_order'      => array(), // array('name'),
+            'alinear'       => array('imagen'=>'center'),
             'opciones'      => array(
                 'detalles'  => true,
                 'editar'    => true,

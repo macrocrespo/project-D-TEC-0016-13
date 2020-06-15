@@ -24,6 +24,7 @@ return [
         'codigo_perfil'     => 'Código de perfil',
         'password'          => 'Contraseña',
         'password_confirmation' => 'Repetir contraseña',
+        'imagen'            => 'Imagen',
         // Tipo de notas
         'descripcion'       => 'Descripcion',
         // Notas

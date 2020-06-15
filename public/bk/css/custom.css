@@ -80,6 +80,9 @@ a.delete-image-list {
     right: 0;
     bottom: 0px;
 }
+.img-list {
+    width: 40px;
+}
 /*
 .navbar-brand img.logo-icon {
     height: 50px;

@@ -3,25 +3,40 @@
 
 <div class="container-fluid">
     <div class="row">
+
         <div class="col-md-12">
-            {{ Backend::card() }}
-
-            <table class="table table-striped">
-                <tbody>
-
-                    {{ Backend::row_details($r, 'titulo', array('width'=>200)) }}
-                    {{ Backend::row_details($r, 'contenido', array('value'=>nl2br($r->contenido))) }}
-                    {{ Backend::row_details($r, 'tipo_nota_id', array('value'=>$r->tipo_nota->descripcion)) }}
-                    {{ Backend::row_details($r, 'fecha', array('value'=>Backend::fecha_formato_listado($r->fecha, true))) }}
-                    {{ Backend::row_details($r, 'usuario_id', array('value'=>$r->usuario->name)) }}
-
-                </tbody>
-            </table>
-            {{ Backend::form_actions('show', route($controller.'.edit', $r)) }}
-
+            <div class="card">
+                <div class="d-flex flex-row">
+                    <div class="p-10 bg-success">
+                        <h3 class="text-white box m-t-10"><i class="far fa-edit"></i></h3></div>
+                    <div class="p-10">
+                        <h3 class="text-success m-b-10">{{ $r->titulo}}</h3>
+                        <span class="text-muted">
+                            <i class="fas fa-user"></i>
+                            {{ $r->usuario->name }}
+                            <i class="fas fa-clock m-l-10"></i>
+                            {{ Backend::fecha_formato_listado($r->fecha, true) }}
+                        </span>
+                        <br>
+                        <span class="text-muted m-t-10" style="display: block;"><strong>Tipo: </strong>{{ ucfirst($r->tipo_nota->descripcion) }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-12">
+            {{ Backend::card(array('title'=>'Nota')) }}
+                {!! nl2br($r->contenido) !!}
             {{ Backend::endcard() }}
         </div>
+
+        {{ Backend::form_actions('show', route($controller.'.edit', $r)) }}
+
     </div>
 </div>
+
+<input type="hidden" id="id" value="{{ $r->id }}">
+<input type="hidden" id="view" value="show">
+<input type="hidden" id="controller" value="{{ $controller }}">
 
 @endsection

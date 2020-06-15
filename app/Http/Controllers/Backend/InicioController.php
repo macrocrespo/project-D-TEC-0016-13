@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Backend;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class InicioController extends Controller
 {
@@ -41,6 +43,15 @@ class InicioController extends Controller
     public function index()
     {
         $this->_load_data();
+        $informes = $cantidad = (object) null;
+        $informes->comunes      = DB::table('informes_comunes')->count();
+        $informes->avances      = DB::table('informes_avances')->count();
+        $informes->hitos        = DB::table('informes_hitos')->count();
+        $informes->indicadores  = DB::table('informes_indicadores')->count();
+        $cantidad->notas        = DB::table('notas')->count();
+        $this->data['informes'] = $informes;
+        $this->data['cantidad'] = $cantidad;
+        $this->data['fincas']   = DB::table('fincas')->get();
         return view('backend/inicio', $this->data);
     }
 }
