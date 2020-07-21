@@ -1,4 +1,4 @@
-<header class="topbar">
+<header class="topbar no-print">
     <nav class="navbar top-navbar navbar-expand-md navbar-dark">
         <div class="navbar-header">
             <!-- This is for the sidebar toggle which is visible on mobile only -->

@@ -7,6 +7,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Config;
+use App\Helpers\Backend;
 
 class Controller extends BaseController
 {
@@ -59,6 +60,17 @@ class Controller extends BaseController
             case 'fileinput':
                 $this->data['js'][]  = 'bk/plugins/file-input/jasny-bootstrap.min.js';
                 $this->data['css'][] = 'bk/plugins/file-input/jasny-bootstrap.min.css';
+                break;
+            case 'ckeditor':
+                $this->data['js'][]  = 'bk/plugins/ckeditor/ckeditor.js';
+                $this->data['js'][]  = 'bk/plugins/ckeditor/ckeditor_custom.js';
+                $this->data['css'][] = 'bk/plugins/ckeditor/ckeditor.css';
+                break;
+            case 'tinymce':
+                $this->data['js'][]  = 'bk/plugins/tinymce/tinymce.min.js';
+                break;
+            case 'print':
+                $this->data['js'][]  = 'bk/plugins/jquery-print/jquery.print.min.js';
                 break;
         }
     }
@@ -132,5 +144,25 @@ class Controller extends BaseController
         $string = str_replace('--', '-', $string);
         $string = strtolower($string);
         return $string;
+    }
+
+    /**
+     * Función para verficar si un usuario tiene permiso de acceso
+     * Sino, mostrar una ventana con aviso
+     */
+    public function ver_permiso($permiso, $user)
+    {
+        $result = Backend::tiene_permiso($permiso, $user->rol_id);
+        if (!$result)
+        {
+            $this->data['controller']       = 'inicio';
+            $this->data['user']             = $user;
+            $this->data['active']['inicio'] = true;
+
+            $this->data['icono_pagina']  = 'fas fa-exclamation-triangle';
+            $this->data['titulo_pagina'] = 'Sin permisos';
+            $this->data['breadcrumb'] = array('-' => 'Sin permisos');
+            echo view('backend/sin_permisos', $this->data);
+        }
     }
 }

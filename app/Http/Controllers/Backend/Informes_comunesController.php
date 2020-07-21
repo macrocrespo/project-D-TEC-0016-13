@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Helpers\Backend;
 
@@ -87,6 +88,7 @@ class Informes_comunesController extends Controller
      */
     public function index()
     {
+        $this->ver_permiso($this->controller.'_crear', Auth::user());
         $this->_load_data();
         $this->load_plugin('datatable');
         return view($this->url_views.'index', $this->data);
@@ -112,6 +114,7 @@ class Informes_comunesController extends Controller
         unset($registros);
         
         // Configuración de del listado
+        $user = Auth::user();
         $listado = array(
             'listado_id'    => $this->controller,
             'controlador'   => $this->controller,
@@ -119,9 +122,9 @@ class Informes_comunesController extends Controller
             'no_order'      => array(), // array('name'),
             'alinear'       => array(),
             'opciones'      => array(
-                'detalles'  => true,
-                'editar'    => true,
-                'eliminar'  => true
+                'detalles'  => Backend::tiene_permiso($this->controller.'_crear', $user->rol_id),
+                'editar'    => Backend::tiene_permiso($this->controller.'_editar', $user->rol_id),
+                'eliminar'  => Backend::tiene_permiso($this->controller.'_eliminar', $user->rol_id),
             ),
             'mensaje'       => 'No se han cargado '.strtolower($this->contenido).'.',
             'mensaje_eliminar' => '¿Seguro que desea eliminar el '.$this->singular.'?'
@@ -147,6 +150,7 @@ class Informes_comunesController extends Controller
     public function destroy($id) {}
     public function delete(Request $request)
     {
+        $this->ver_permiso($this->controller.'_eliminar', Auth::user());
         $id = $request->input('id');
         $r = Informe_comun::find($id);
         if ($r)
@@ -172,8 +176,9 @@ class Informes_comunesController extends Controller
      */
     public function create()
     {
+        $this->ver_permiso($this->controller.'_crear', Auth::user());
         // Plugins
-        $this->load_plugin('html5editor');
+        $this->load_plugin('ckeditor');
         $this->load_plugin('fileinput');
         // Data
         $this->_load_data('create');
@@ -243,8 +248,9 @@ class Informes_comunesController extends Controller
      */
     public function show($id)
     {
+        $this->ver_permiso($this->controller.'_crear', Auth::user());
         // Plugins
-        $this->load_plugin('html5editor');
+        $this->load_plugin('print');
         $this->data['js'][] = 'bk/js/'.$this->controller.'.js';
         
         $this->_load_data('show');
@@ -263,8 +269,9 @@ class Informes_comunesController extends Controller
      */
     public function edit($id)
     {
+        $this->ver_permiso($this->controller.'_editar', Auth::user());
         // Plugins
-        $this->load_plugin('html5editor');
+        $this->load_plugin('ckeditor');
         $this->load_plugin('fileinput');
         $this->data['js'][] = 'bk/js/'.$this->controller.'.js';
         // Data
@@ -306,6 +313,7 @@ class Informes_comunesController extends Controller
      */
     public function images_add(Request $request)
     {
+        $this->ver_permiso($this->controller.'_editar', Auth::user());
         // Validación
         $this->validate($request, [
             'informe_comun_id'  => 'required',
@@ -350,6 +358,7 @@ class Informes_comunesController extends Controller
      */
     public function images_delete(Request $request)
     {
+        $this->ver_permiso($this->controller.'_editar', Auth::user());
         $id = $request->input('id');
         $r = Informe_comun_imagen::findOrFail($id);
 

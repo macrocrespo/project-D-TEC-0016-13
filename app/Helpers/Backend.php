@@ -83,14 +83,14 @@ class Backend {
     }
 
     /**
-     * Convierte la fecha "31-12-2017" en "2017-12-31"
+     * Convierte la fecha "31/12/2017" en "2017-12-31"
      * @param type $fecha
      * @param type $fin_de_dia
      * @return type
      */
     public static function fecha_formato_db($fecha = '', $fin_de_dia = 0)
     {
-        $fecha_db = explode('-', $fecha);
+        $fecha_db = explode('/', $fecha);
         $horario = ($fin_de_dia) ? '23:59:59' : '00:00:00';
         return (count($fecha_db) == 3) ? $fecha_db[2].'-'.$fecha_db[1].'-'.$fecha_db[0].' '.$horario : null;
     }
@@ -311,11 +311,34 @@ class Backend {
                 'value'     => isset($params['value'])      ? $params['value'] : date("d-m-Y"),
                 'id'        => isset($params['id'])         ? $params['id'] : $name,
                 'required'  => isset($params['required'])   ? $params['required'] : true,
+                'readonly'  => isset($params['readonly'])   ? $params['readonly'] : false,
                 'error_txt' => isset($params['error_txt'])  ? $params['error_txt'] : 'Debe ingresar el '.strtolower($label),
                 'daterange' => isset($params['daterange'])  ? $params['daterange'] : false,
                 'size'      => isset($params['size'])       ? $params['size'] : 12 // col-md-12
             );
             $html = view('helpers.backend.form_datepicker', $data);
+        }
+        echo $html;
+    }
+
+    /**
+     * Función para generar el HTML de un input radio para un permiso asociado al rol
+     * @return type
+     */
+    public static function form_permiso($name = '', $params = array()) 
+    {
+        $html = '';
+        if ($name != '' && isset($params['permisos']) && isset($params['permisos_rol']) )
+        {
+            $permisos       = $params['permisos'];
+            $permisos_rol   = $params['permisos_rol'];
+
+            $data = array(
+                'name'      => $name,
+                'label'     => $permisos[$name],
+                'value'     => in_array($name, $permisos_rol) ? 0 : 1
+            );
+            $html = view('helpers.backend.form_permiso', $data);
         }
         echo $html;
     }
@@ -391,5 +414,20 @@ class Backend {
             $html = view('helpers.backend.row_details', $data);
         }
         echo $html;
+    }
+
+    public static function btn_print_report()
+    {
+        echo view('helpers.backend.btn_print_report');
+    }
+
+    public static function tiene_permiso($permiso = '', $rol_id = 0)
+    {
+        $result = DB::table('roles_permisos as rp')
+                    ->join('permisos as p', 'rp.permiso_id', '=', 'p.id')
+                    ->where('p.nombre', '=', $permiso)
+                    ->where('rp.rol_id', '=', $rol_id)
+                    ->count();
+        return ($result) ? false : true;   
     }
 }

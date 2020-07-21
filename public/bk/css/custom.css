@@ -83,6 +83,30 @@ a.delete-image-list {
 .img-list {
     width: 40px;
 }
+.ck-editor__editable {
+    min-height: 100px !important;
+}
+.d-flex .p-10 {
+    padding: 10px;
+}
+.becario {
+    border: 2px solid rgba(0, 0, 0, 0.1);
+}
+.becario_selected {
+    border: 2px solid #4798e8;
+}
+
+@media print
+{    
+    .no-print, .no-print *, .tooltip
+    {
+        display: none !important;
+    }
+    .col-md-2 {
+        flex: 0 0 16.66667%;
+        max-width: 16.66667%;
+    }
+}
 /*
 .navbar-brand img.logo-icon {
     height: 50px;

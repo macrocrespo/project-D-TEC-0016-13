@@ -83,6 +83,7 @@ class Tipo_notasController extends Controller
      */
     public function index()
     {
+        $this->ver_permiso($this->controller.'_crear', Auth::user());
         $this->_load_data();
         $this->load_plugin('datatable');
         return view($this->url_views.'index', $this->data);
@@ -107,15 +108,16 @@ class Tipo_notasController extends Controller
         unset($registros);
         
         // Configuración de del listado
+        $user = Auth::user();
         $listado = array(
             'listado_id'    => $this->controller,
             'controlador'   => $this->controller,
             'registros'     => $valores,
             'no_order'      => array(), // array('name'),
             'opciones'      => array(
-                'detalles'  => true,
-                'editar'    => true,
-                'eliminar'  => true
+                'detalles'  => Backend::tiene_permiso($this->controller.'_crear', $user->rol_id),
+                'editar'    => Backend::tiene_permiso($this->controller.'_editar', $user->rol_id),
+                'eliminar'  => Backend::tiene_permiso($this->controller.'_eliminar', $user->rol_id),
             ),
             'mensaje'       => 'No se han cargado '.strtolower($this->contenido).'.',
             'mensaje_eliminar' => '¿Seguro que desea eliminar el '.$this->singular.'?'
@@ -141,6 +143,7 @@ class Tipo_notasController extends Controller
     public function destroy($id) {}
     public function delete(Request $request)
     {
+        $this->ver_permiso($this->controller.'_eliminar', Auth::user());
         $id = $request->input('id');
         $r = Tipo_nota::find($id);
         if ($r)
@@ -156,6 +159,7 @@ class Tipo_notasController extends Controller
      */
     public function create()
     {
+        $this->ver_permiso($this->controller.'_crear', Auth::user());
         // Data
         $this->_load_data('create');
         $this->_data_to_form();
@@ -206,6 +210,7 @@ class Tipo_notasController extends Controller
      */
     public function show($id)
     {
+        $this->ver_permiso($this->controller.'_crear', Auth::user());
         $this->_load_data('show');
         // Obtener los datos del registro
         $this->data['r'] = Tipo_nota::find($id);
@@ -222,6 +227,7 @@ class Tipo_notasController extends Controller
      */
     public function edit($id)
     {
+        $this->ver_permiso($this->controller.'_editar', Auth::user());
         // Data
         $this->_load_data('edit');
         $this->_data_to_form($id);

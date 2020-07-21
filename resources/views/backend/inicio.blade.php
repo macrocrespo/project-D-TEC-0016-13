@@ -40,6 +40,7 @@
 
             <div class="row">
                 
+                @if (Backend::tiene_permiso('informes_comunes_crear', $user->rol_id))
                 <div class="col-md-6">
                     <a href="{{ route('informes_comunes.index') }}">
                         <div class="card">
@@ -58,23 +59,30 @@
                         </div>
                     </a>
                 </div>
-                <?php /*
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-12">
-                                    <h3 style="color: #666;">{{ $informes->avances }}</h3>
-                                    <h6 class="card-subtitle">Informes de avances</h6></div>
-                                <div class="col-12">
-                                    <div class="progress">
-                                        <div class="progress-bar bg-info" role="progressbar" style="width: 80%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                @endif
+                
+                @if (Backend::tiene_permiso('informes_avances_crear', $user->rol_id))
+                <div class="col-md-6">
+                    <a href="{{ route('informes_avances.index') }}">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h3 style="color: #666;">{{ $informes->avances }}</h3>
+                                        <h6 class="card-subtitle">Informes de avances</h6></div>
+                                    <div class="col-12">
+                                        <div class="progress">
+                                            <div class="progress-bar bg-info" role="progressbar" style="width: 80%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
+                @endif
+
+                <?php /*
                 <div class="col-md-4">
                     <div class="card">
                         <div class="card-body">
@@ -108,6 +116,8 @@
                     </div>
                 </div>
                 */ ?>
+
+                @if (Backend::tiene_permiso('notas_crear', $user->rol_id))
                 <div class="col-md-6">
                     <a href="{{ route('notas.index') }}">
                         <div class="card">
@@ -126,6 +136,7 @@
                         </div>
                     </div>
                   </a>
+                  @endif
                 
             </div>
 

@@ -51,3 +51,18 @@ function eliminar_imagen_form(campo_imagen) {
         }
     });
 }
+
+function imprimir(id) {
+    $("#"+id).print({
+        globalStyles: true,
+        mediaPrint: true,
+    });
+}
+
+function anim(id, animation) {
+    element = $('#'+id);
+    element.addClass('animated ' + animation);
+    window.setTimeout( function() {
+        element.removeClass('animated ' + animation);
+    }, 1500);
+}

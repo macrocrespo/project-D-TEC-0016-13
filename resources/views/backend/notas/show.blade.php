@@ -1,7 +1,7 @@
 @extends('layouts.backend.index')
 @section('content')
 
-<div class="container-fluid">
+<div id="detalles" class="container-fluid">
     <div class="row">
 
         <div class="col-md-12">
@@ -20,6 +20,9 @@
                         <br>
                         <span class="text-muted m-t-10" style="display: block;"><strong>Tipo: </strong>{{ ucfirst($r->tipo_nota->descripcion) }}</span>
                     </div>
+                    @if (Backend::tiene_permiso('imprimir_exportar', $user->rol_id))
+                        {{ Backend::btn_print_report() }}
+                    @endif
                 </div>
             </div>
         </div>

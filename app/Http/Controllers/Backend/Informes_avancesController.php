@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\Backend;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Http\Request;
 use App\Helpers\Backend;
 
-use App\Models\Nota;
-use App\Models\Tipo_nota;
+use App\Models\Informe_avances;
+use App\Models\Becario;
 
-class NotasController extends Controller
+
+class Informes_avancesController extends Controller
 {
     public $data;
     public $controller;
@@ -21,10 +24,10 @@ class NotasController extends Controller
     {
         parent::__construct();
         $this->middleware('auth'); // Autenticación
-        $this->controller   = 'notas';
+        $this->controller   = 'informes_avances';
         $this->url_views    = 'backend.'.$this->controller.'.';
-        $this->contenido    = 'Notas';
-        $this->singular     = 'nota';
+        $this->contenido    = 'Informes tecnicos de avances';
+        $this->singular     = 'informe técnico de avances';
     }
 
     /**
@@ -33,10 +36,9 @@ class NotasController extends Controller
     private function _load_data($page = 'index')
     {
         $this->data['controller']   = $this->controller;
-        $this->data['user']         = Auth::user(); // Cargar el Tipo de nota registrado
+        $this->data['user']         = Auth::user();
         $this->data['contenido']    = $this->contenido;
         $this->data['singular']     = $this->singular;
-        $this->data['active']['_notas'] = true;
         $this->data['active'][$this->controller] = true;
 
         // Migas de pan (breadcrumb)
@@ -44,7 +46,7 @@ class NotasController extends Controller
         switch($page)
         {
             case 'index': 
-                $this->data['icono_pagina']  = 'far fa-edit';
+                $this->data['icono_pagina']  = 'fas fa-tasks';
                 $this->data['titulo_pagina'] = $title;
                 $this->data['breadcrumb'] = array(
                     '-' => $title
@@ -68,10 +70,10 @@ class NotasController extends Controller
                 break;
             case 'show': 
                 $this->data['icono_pagina']  = 'fas fa-check-circle';
-                $this->data['titulo_pagina'] = 'Detalles de la '.$this->singular;
+                $this->data['titulo_pagina'] = 'Detalles del '.$this->singular;
                 $this->data['breadcrumb'] = array(
                     $this->controller.'.index' => $title,
-                    '-' => 'Detalles de la '.$this->singular
+                    '-' => 'Detalles del '.$this->singular
                 );
                 break;
         }
@@ -96,16 +98,16 @@ class NotasController extends Controller
     public function list()
     {
         // Obtener los registros de la base de datos
-        $registros = Nota::orderBy('titulo', 'asc')->get();
+        $registros = Informe_avances::orderBy('id', 'desc')->get(['id', 'anio', 'proyecto', 'updated_at']);
 
         // Formatear los registros para adaptar los valores a mostrar en el listado
         $valores = array();
         foreach ($registros as $r)
         {
             $valores[$r->id] = array(
-                'fecha'         => Backend::fecha_formato_listado($r->fecha, true),
-                'titulo'        => $r->titulo,
-                'tipo_nota_id'  => $r->tipo_nota->descripcion
+                'anio'      => $r->anio,
+                'proyecto'  => $r->proyecto,
+                'fecha'     => Backend::fecha_formato_listado($r->updated_at)
             );
         }
         unset($registros);
@@ -117,14 +119,14 @@ class NotasController extends Controller
             'controlador'   => $this->controller,
             'registros'     => $valores,
             'no_order'      => array(), // array('name'),
-            'alinear'       => array('fecha'=>'center'),
+            'alinear'       => array(),
             'opciones'      => array(
                 'detalles'  => Backend::tiene_permiso($this->controller.'_crear', $user->rol_id),
                 'editar'    => Backend::tiene_permiso($this->controller.'_editar', $user->rol_id),
                 'eliminar'  => Backend::tiene_permiso($this->controller.'_eliminar', $user->rol_id),
             ),
             'mensaje'       => 'No se han cargado '.strtolower($this->contenido).'.',
-            'mensaje_eliminar' => '¿Seguro que desea eliminar la '.$this->singular.'?'
+            'mensaje_eliminar' => '¿Seguro que desea eliminar el '.$this->singular.'?'
         );
         Backend::datatable($listado);
     }
@@ -149,9 +151,15 @@ class NotasController extends Controller
     {
         $this->ver_permiso($this->controller.'_eliminar', Auth::user());
         $id = $request->input('id');
-        $r = Nota::find($id);
+        $r = Informe_avances::find($id);
         if ($r)
         {
+            // Quitar relaciones con becarios
+            DB::table('informes_avances_becarios')
+                    ->where('informe_avance_id', '=', $id)
+                    ->delete();
+
+            // Eliminar el informe
             $r->delete();
         }
     }
@@ -165,8 +173,9 @@ class NotasController extends Controller
     {
         $this->ver_permiso($this->controller.'_crear', Auth::user());
         // Plugins
-        $this->load_plugin('ckeditor');
         $this->load_plugin('select2');
+        $this->load_plugin('ckeditor');
+        $this->data['js'][] = 'bk/js/'.$this->controller.'.js';
         // Data
         $this->_load_data('create');
         $this->_data_to_form();
@@ -179,13 +188,25 @@ class NotasController extends Controller
      */
     private function _data_to_form($id = 0)
     {
-        // Tipo de notas
-        $this->data['tipo_notas'] = Tipo_nota::orderBy('descripcion', 'asc')->get();
+        $this->data['directores'] = DB::table('users')->where('rol_id', '=', 2)->get(['id', 'name']);
+        $becarios = DB::table('users')->where('rol_id', '>', 2)->get(['id', 'name', 'email']);
         if ($id > 0)
         {
             // Obtener los datos del registro
-            $this->data['r'] = Nota::find($id);
+            $r = Informe_avances::find($id);
+            $this->data['r'] = $r;
+            // Becarios asociados
+            foreach ($becarios as $b)
+            {
+                $b->selected = false;
+                $asociado = DB::table('informes_avances_becarios')
+                            ->where('usuario_id', '=', $b->id)
+                            ->where('informe_avance_id', '=', $id)
+                            ->count();
+                if ($asociado) { $b->selected = true; }
+            }
         }
+        $this->data['becarios'] = $becarios;
     }
 
     /**
@@ -196,24 +217,53 @@ class NotasController extends Controller
      */
     public function store(Request $request)
     {
+        $campos = array(
+            'anio'              => 'required',
+            'proyecto'          => 'required',
+            'codigo_proyecto'   => 'required',
+            'componente'        => 'required',
+            'universidad'       => 'required',
+            'director_proyecto_id' => 'required',
+            'periodo_informe'   => 'required',
+            'fecha_ita'         => 'required',
+            'resultados_pa'     => 'required',
+            'grado_avance'      => 'required',
+            'analisis_causal'   => 'required',
+            'ajustes'           => 'required',
+            'sintesis'          => 'required',
+            'avance_transferencia' => 'required',
+            'presupuesto_estado'=> 'required',
+            'acciones_gastos'   => 'required',
+            'comentarios'       => 'required',
+            'anexos'            => 'required'
+        );
         // Validación
-        $validate = $this->validate($request, [
-            'titulo'        => 'required',
-            'contenido'     => 'required',
-            'tipo_nota_id'  => 'required'
-        ]);
+        $this->validate($request, $campos);
 
         // Crear el nuevo registro
-        $r = new Nota();
-        $r->titulo          = $request->input('titulo');
-        $r->contenido       = $request->input('contenido');
-        $r->tipo_nota_id    = $request->input('tipo_nota_id');
-        $r->fecha           = date("Y-m-d H:i:s");
-        $r->usuario_id      = Auth::user()->id;
+        $r = new Informe_avances();
+        foreach ($campos as $campo => $validate)
+        {
+            $r->$campo = $request->input($campo);
+        }
         $r->save();
 
+        // Asociar becarios
+        $becarios = DB::table('users')->where('rol_id', '>', 2)->get(['id']);
+        foreach ($becarios as $b)
+        {
+            $becario_activo = $request->input('check_becario_'.$b->id);
+            if ($becario_activo == 'on')
+            {
+                $becario = new Becario();
+                $becario->usuario_id = $b->id;
+                $becario->informe_avance_id = $r->id;
+                $becario->save();
+            }
+        }
+
         return redirect()->route($this->controller.'.index')->with([
-            'mensaje' => 'La '.$this->singular.' se ha agregado correctamente.'
+            'mensaje' => 'El '.$this->singular.' se ha agregado correctamente.'
         ]);
     }
      
@@ -228,11 +278,12 @@ class NotasController extends Controller
         $this->ver_permiso($this->controller.'_crear', Auth::user());
         // Plugins
         $this->load_plugin('print');
+        $this->data['js'][] = 'bk/js/'.$this->controller.'.js';
         
+        // Data
         $this->_load_data('show');
-        // Obtener los datos del registro
-        $this->data['r'] = Nota::find($id);
-
+        $this->_data_to_form($id);
+        $this->data['tags'] = (object) Config::get('backend.tags');
         // Mostrar la vista
         return view($this->url_views.'show', $this->data);
     }
@@ -247,9 +298,10 @@ class NotasController extends Controller
     {
         $this->ver_permiso($this->controller.'_editar', Auth::user());
         // Plugins
-        $this->load_plugin('ckeditor');
         $this->load_plugin('select2');
-        // Data
+        $this->load_plugin('ckeditor');
+        $this->data['js'][] = 'bk/js/'.$this->controller.'.js';
+        
         $this->_load_data('edit');
         $this->_data_to_form($id);
         // View
@@ -265,23 +317,68 @@ class NotasController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $campos = array(
+            'anio'              => 'required',
+            'proyecto'          => 'required',
+            'codigo_proyecto'   => 'required',
+            'componente'        => 'required',
+            'universidad'       => 'required',
+            'director_proyecto_id' => 'required',
+            'periodo_informe'   => 'required',
+            'fecha_ita'         => 'required',
+            'resultados_pa'     => 'required',
+            'grado_avance'      => 'required',
+            'analisis_causal'   => 'required',
+            'ajustes'           => 'required',
+            'sintesis'          => 'required',
+            'avance_transferencia' => 'required',
+            'presupuesto_estado'=> 'required',
+            'acciones_gastos'   => 'required',
+            'comentarios'       => 'required',
+            'anexos'            => 'required'
+        );
         // Validación
-        $validate = $this->validate($request, [
-            'titulo'        => 'required',
-            'contenido'     => 'required',
-            'tipo_nota_id'  => 'required'
-        ]);
+        $this->validate($request, $campos);
 
         // Modificar el registro
-        $r = Nota::find($id);
-        $r->titulo          = $request->input('titulo');
-        $r->contenido       = $request->input('contenido');
-        $r->tipo_nota_id    = $request->input('tipo_nota_id');
-        $r->fecha           = date("Y-m-d H:i:s");
+        $r = Informe_avances::find($id);
+        foreach ($campos as $campo => $validate)
+        {
+            $r->$campo = $request->input($campo);
+        }
         $r->update();
 
+        // Asociar becarios
+        $becarios = DB::table('users')->where('rol_id', '>', 2)->get(['id']);
+        foreach ($becarios as $b)
+        {
+            // Verificar si ya esta asociado en DB
+            $asociado = DB::table('informes_avances_becarios')
+                            ->where('usuario_id', '=', $b->id)
+                            ->where('informe_avance_id', '=', $id)
+                            ->count();
+            // Activo en el Form
+            $becario_activo = $request->input('check_becario_'.$b->id);
+            // Si esta activo, pero no esta asociado, insertar
+            if ($becario_activo == 'on' && !$asociado)
+            {
+                $becario = new Becario();
+                $becario->usuario_id = $b->id;
+                $becario->informe_avance_id = $r->id;
+                $becario->save();
+            }
+            // Si no esta activo, pero si esta asociado, eliminar
+            if (!$becario_activo && $asociado)
+            {
+                DB::table('informes_avances_becarios')
+                    ->where('usuario_id', '=', $b->id)
+                    ->where('informe_avance_id', '=', $id)
+                    ->delete();
+            }
+        }
+
         return redirect()->route($this->controller.'.index')->with([
-            'mensaje' => 'La '.$this->singular.' se ha editado correctamente.'
+            'mensaje' => 'El '.$this->singular.' se ha editado correctamente.'
         ]);
     }
 }

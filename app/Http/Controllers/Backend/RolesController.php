@@ -4,30 +4,29 @@ namespace App\Http\Controllers\Backend;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use App\Helpers\Backend;
+use Illuminate\Support\Facades\DB;
 
-use App\Models\User;
 use App\Models\Rol;
+use App\Models\User;
+use App\Models\Permiso;
 
-class UsuariosController extends Controller
+class RolesController extends Controller
 {
     public $data;
     public $controller;
-    public $filepath;
-    public $codigos_perfil;
+    public $url_views;
+    public $contenido;
+    public $singular;
 
     public function __construct()
     {
         parent::__construct();
         $this->middleware('auth'); // Autenticación
-        $this->controller = 'usuarios';
-        $this->filepath = 'images/usuarios/';
-        $this->codigos_perfil = array(
-            'D-TEC 0016/13-C5-DR',
-            'D-TEC 0016/13-C5- PA',
-            'D-TEC 0016/13-C5-PAF 10'
-        );
+        $this->controller   = 'roles';
+        $this->url_views    = 'backend.'.$this->controller.'.';
+        $this->contenido    = 'Roles';
+        $this->singular     = 'rol';
     }
 
     /**
@@ -35,15 +34,18 @@ class UsuariosController extends Controller
      */
     private function _load_data($page = 'index')
     {
-        $title = 'Usuarios';
-        $this->data['controller'] = $this->controller;
-        $this->data['user']  = Auth::user(); // Cargar el usuario registrado
+        $this->data['controller']   = $this->controller;
+        $this->data['user']         = Auth::user(); // Cargar el Tipo de rol registrado
+        $this->data['contenido']    = $this->contenido;
+        $this->data['singular']     = $this->singular;
         $this->data['active'][$this->controller] = true;
+
         // Migas de pan (breadcrumb)
+        $title = $this->contenido;
         switch($page)
         {
             case 'index': 
-                $this->data['icono_pagina']  = 'fas fa-users';
+                $this->data['icono_pagina']  = 'fas fa-user-circle';
                 $this->data['titulo_pagina'] = $title;
                 $this->data['breadcrumb'] = array(
                     '-' => $title
@@ -51,26 +53,26 @@ class UsuariosController extends Controller
                 break;
             case 'create': 
                 $this->data['icono_pagina']  = 'fas fa-plus-circle';
-                $this->data['titulo_pagina'] = 'Agregar usuario';
+                $this->data['titulo_pagina'] = 'Agregar '.$this->singular;
                 $this->data['breadcrumb'] = array(
                     $this->controller.'.index' => $title,
-                    '-' => 'Agregar usuario'
+                    '-' => 'Agregar '.$this->singular
                 );
                 break;
             case 'edit': 
                 $this->data['icono_pagina']  = 'fas fa-pencil-alt';
-                $this->data['titulo_pagina'] = 'Editar usuario';
+                $this->data['titulo_pagina'] = 'Editar '.$this->singular;
                 $this->data['breadcrumb'] = array(
                     $this->controller.'.index' => $title,
-                    '-' => 'Editar usuario'
+                    '-' => 'Editar '.$this->singular
                 );
                 break;
             case 'show': 
                 $this->data['icono_pagina']  = 'fas fa-check-circle';
-                $this->data['titulo_pagina'] = 'Detalles del usuario';
+                $this->data['titulo_pagina'] = 'Detalles del '.$this->singular;
                 $this->data['breadcrumb'] = array(
                     $this->controller.'.index' => $title,
-                    '-' => 'Detalles del usuario'
+                    '-' => 'Detalles del '.$this->singular
                 );
                 break;
         }
@@ -86,7 +88,7 @@ class UsuariosController extends Controller
         $this->ver_permiso($this->controller.'_crear', Auth::user());
         $this->_load_data();
         $this->load_plugin('datatable');
-        return view('backend.usuarios.index', $this->data);
+        return view($this->url_views.'index', $this->data);
     }
 
     /**
@@ -97,18 +99,16 @@ class UsuariosController extends Controller
         $user = Auth::user();
         // Obtener los registros de la base de datos
         $registros = ($user->rol_id == 1) ? 
-                        User::orderBy('name', 'asc')->get() : 
-                        User::where('rol_id','>', 1)->orderBy('name', 'asc')->get();
+                        Rol::orderBy('nombre', 'asc')->get() : 
+                        Rol::where('id','>', 1)->orderBy('nombre', 'asc')->get();
 
         // Formatear los registros para adaptar los valores a mostrar en el listado
         $valores = array();
         foreach ($registros as $r)
         {
             $valores[$r->id] = array(
-                'imagen' => '<img class="img-list" src="'.asset('bk/images/users/user'.$r->id.'.png').'" />',
-                'name' => $r->name,
-                'email' => $r->email,
-                'rol_id' => '<a title="Ver detalles del rol" href="'.url($this->admin_url).'/roles/'.$r->rol->id.'">'.$r->rol->nombre.'</a>'
+                'nombre'        => $r->nombre,
+                'descripcion'   => $r->descripcion
             );
         }
         unset($registros);
@@ -120,14 +120,14 @@ class UsuariosController extends Controller
             'controlador'   => $this->controller,
             'registros'     => $valores,
             'no_order'      => array(), // array('name'),
-            'alinear'       => array('imagen'=>'center'),
+            'alinear'       => array(),
             'opciones'      => array(
                 'detalles'  => Backend::tiene_permiso($this->controller.'_crear', $user->rol_id),
                 'editar'    => Backend::tiene_permiso($this->controller.'_editar', $user->rol_id),
                 'eliminar'  => Backend::tiene_permiso($this->controller.'_eliminar', $user->rol_id),
             ),
-            'mensaje'       => 'No se han cargado usuarios.',
-            'mensaje_eliminar' => '¿Seguro que desea eliminar el usuario?'
+            'mensaje'       => 'No se han cargado '.strtolower($this->contenido).'.',
+            'mensaje_eliminar' => '¿Seguro que desea eliminar el '.$this->singular.'?'
         );
         Backend::datatable($listado);
     }
@@ -135,17 +135,18 @@ class UsuariosController extends Controller
     /**
      * Función para verificar la eliminación de un registro
      */
-    public function verify()
+    public function verify(Request $request)
     {
-        // Por el momento no hay restricciones para eliminar
-        echo 1;
+        // No se puede eliminar un rol si tiene usuarios asociados
+        $id = $request->input('id');
+        $usuarios = User::where('rol_id', $id)->count();
+        echo ($usuarios == 0) ? 1 : 0;
     }
 
     /**
      * Delete the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
     public function destroy($id) {}
@@ -153,10 +154,12 @@ class UsuariosController extends Controller
     {
         $this->ver_permiso($this->controller.'_eliminar', Auth::user());
         $id = $request->input('id');
-        $user = User::find($id);
-        if ($user)
+        $r = Rol::find($id);
+        if ($r)
         {
-            $user->delete();
+            // Eliminar los permisos asociados
+            DB::table('roles_permisos')->where('rol_id', '=', $id)->delete();
+            $r->delete();
         }
     }
 
@@ -168,13 +171,11 @@ class UsuariosController extends Controller
     public function create()
     {
         $this->ver_permiso($this->controller.'_crear', Auth::user());
-        // Plugins
-        $this->load_plugin('select2');
         // Data
         $this->_load_data('create');
         $this->_data_to_form();
         // View
-        return view('backend.usuarios.create', $this->data);
+        return view($this->url_views.'create', $this->data);
     }
 
     /**
@@ -182,18 +183,30 @@ class UsuariosController extends Controller
      */
     private function _data_to_form($id = 0)
     {
-        $user = Auth::user();
-        // Obtener los datos de los roles
-        $this->data['roles'] = ($user->rol_id == 1) ? 
-                                Rol::orderBy('nombre', 'asc')->get() : 
-                                Rol::where('id','>', 1)->orderBy('nombre', 'asc')->get();
-        
-        Rol::orderBy('nombre', 'asc')->get();
-        $this->data['codigos_perfil'] = $this->codigos_perfil;
         if ($id > 0)
         {
-            // Obtener los datos del usuario
-            $this->data['r'] = User::find($id);
+            // Obtener los datos del registro
+            $r = Rol::find($id);
+            $this->data['r'] = $r;
+            
+            // Permisos
+            $permisos_rol = array();
+            foreach ($r->permisos as $p)
+            {
+                $permisos_rol[] = $p->nombre;
+            }
+
+            $permisos_db = Permiso::orderBy('id', 'asc')->get();
+            $permisos = array();
+            foreach ($permisos_db as $p)
+            {
+                $permisos[$p->nombre] = $p->descripcion;
+            }
+            // Parámetros de los inputs
+            $this->data['params'] = array(
+                'permisos'      => $permisos,
+                'permisos_rol'  => $permisos_rol
+            );
         }
     }
 
@@ -207,28 +220,21 @@ class UsuariosController extends Controller
     {
         // Validación
         $validate = $this->validate($request, [
-            'name'      => ['required', 'string', 'max:255'],
-            'email'     => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password'  => ['required', 'string', 'min:8', 'confirmed'],
-            'rol_id'    => 'required'
+            'nombre'        => 'required',
+            'descripcion'   => 'required'
         ]);
 
         // Crear el nuevo registro
-        $r = new User();
-        $r->name            = $request->input('name');
-        $r->email           = $request->input('email');
-        $r->domicilio       = $request->input('domicilio');
-        $r->codigo_perfil   = $request->input('codigo_perfil');
-        $r->rol_id          = $request->input('rol_id');
-        $r->password        = Hash::make($request->input('password'));
+        $r = new Rol();
+        $r->nombre      = $request->input('nombre');
+        $r->descripcion = $request->input('descripcion');
         $r->save();
 
-        return redirect()->route('usuarios.index')->with([
-            'mensaje' => 'El usuario se ha agregado correctamente.'
+        return redirect()->route($this->controller.'.index')->with([
+            'mensaje' => 'El '.$this->singular.' se ha agregado correctamente.'
         ]);
     }
-        
-
+     
     /**
      * Display the specified resource.
      *
@@ -239,11 +245,11 @@ class UsuariosController extends Controller
     {
         $this->ver_permiso($this->controller.'_crear', Auth::user());
         $this->_load_data('show');
-        // Obtener los datos de la promoción
-        $this->data['r'] = User::find($id);
+        // Obtener los datos del registro
+        $this->data['r'] = Rol::find($id);
 
         // Mostrar la vista
-        return view('backend.usuarios.show', $this->data);
+        return view($this->url_views.'show', $this->data);
     }
 
     /**
@@ -255,13 +261,12 @@ class UsuariosController extends Controller
     public function edit($id)
     {
         $this->ver_permiso($this->controller.'_editar', Auth::user());
-        // Plugins
-        $this->load_plugin('select2');
         // Data
         $this->_load_data('edit');
+        $this->data['js'][] = 'bk/js/'.$this->controller.'.js';
         $this->_data_to_form($id);
         // View
-        return view('backend.usuarios.edit', $this->data);
+        return view($this->url_views.'edit', $this->data);
     }
 
     /**
@@ -275,22 +280,46 @@ class UsuariosController extends Controller
     {
         // Validación
         $validate = $this->validate($request, [
-            'name'      => ['required', 'string', 'max:255'],
-            'email'     => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'rol_id'    => 'required'
+            'nombre'        => 'required',
+            'descripcion'   => 'required',
         ]);
 
         // Modificar el registro
-        $r = User::find($id);
-        $r->name            = $request->input('name');
-        $r->email           = $request->input('email');
-        $r->domicilio       = $request->input('domicilio');
-        $r->codigo_perfil   = $request->input('codigo_perfil');
-        $r->rol_id          = $request->input('rol_id');
+        $r = Rol::find($id);
+        $r->nombre      = $request->input('nombre');
+        $r->descripcion = $request->input('descripcion');
         $r->update();
 
-        return redirect()->route('usuarios.index')->with([
-            'mensaje' => 'El usuario se ha editado correctamente.'
+        return redirect()->route($this->controller.'.index')->with([
+            'mensaje' => 'El '.$this->singular.' se ha editado correctamente.'
         ]);
+    }
+
+    public function permiso(Request $request)
+    {
+        $this->ver_permiso($this->controller.'_editar', Auth::user());
+        $id             = $request->input('id');
+        $permiso_nombre = $request->input('permiso');
+        $value          = $request->input('value');
+
+        // Obtener el ID del permiso
+        $permiso = Permiso::where('nombre', '=', $permiso_nombre)->first(['id']);
+        if ($permiso)
+        {
+            if ($value) // Si $value = 1 => Eliminar el permiso de la DB
+            { 
+                DB::table('roles_permisos')
+                ->where('rol_id', '=', $id)
+                ->where('permiso_id', '=', $permiso->id)
+                ->delete();
+            }
+            else // Si $value = 0 => Agregar el permiso en DB
+            {
+                DB::table('roles_permisos')->insert([
+                    'rol_id' => $id, 
+                    'permiso_id' => $permiso->id
+                ]);
+            }
+        }
     }
 }

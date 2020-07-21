@@ -1,4 +1,4 @@
-<div class="form-actions">
+<div class="form-actions no-print">
 
     <div class="col-sm-12">
         @if ($link == '')

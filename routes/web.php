@@ -27,6 +27,14 @@ Route::prefix($admin_url)->group(function () {
     $f = 'verify';  Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
     Route::resource($url, $c);
 
+    // Roles
+    $url = 'roles'; $c = 'Backend\RolesController';
+    $f = 'list';    Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    $f = 'delete';  Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    $f = 'verify';  Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    $f = 'permiso'; Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    Route::resource($url, $c);
+
     // Notas
     $url = 'notas'; $c = 'Backend\NotasController';
     $f = 'list';    Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
@@ -49,6 +57,13 @@ Route::prefix($admin_url)->group(function () {
     $f = 'images_add';      Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
     $f = 'images_list';     Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
     $f = 'images_delete';   Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    Route::resource($url, $c);
+
+    // Informes avances
+    $url = 'informes_avances'; $c = 'Backend\Informes_avancesController';
+    $f = 'list';            Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    $f = 'delete';          Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
+    $f = 'verify';          Route::post($url.'/'.$f, $c.'@'.$f)->name($url.'.'.$f);
     Route::resource($url, $c);
 
 });

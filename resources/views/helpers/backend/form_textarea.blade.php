@@ -4,7 +4,7 @@
 
     <textarea name="{{ $name }}" id="{{ $id }}" 
         style="min-height: {{ $height }}px;" 
-        class="form-control @if ($editor) html5editor @endif"
+        class="form-control @if ($editor) editor @endif"
         @if ($required) required @endif 
         @if ($readonly) readonly @endif >
         {{ $value }}

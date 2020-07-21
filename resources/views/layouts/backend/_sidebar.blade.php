@@ -1,4 +1,4 @@
-<aside class="left-sidebar">
+<aside class="left-sidebar no-print">
     <!-- Sidebar scroll-->
     <div class="scroll-sidebar">
         <!-- Sidebar navigation-->
@@ -43,21 +43,26 @@
                         <span class="hide-menu">Inicio</span>
                     </a>
                 </li>
-                <li class="sidebar-item @if (isset($active['informes'])) selected @endif">
-                    <a class="sidebar-link has-arrow waves-effect waves-dark @if (isset($active['informes'])) active @endif" href="javascript:void(0)
-                           " aria-expanded="false">
+
+                @if (Backend::tiene_permiso('informes_comunes_crear', $user->rol_id))
+                <li class="sidebar-item">
+                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{ route('informes_comunes.index') }}" aria-expanded="false">
                         <i class="fas fa-tasks"></i>
-                        <span class="hide-menu">Informes</span>
+                        <span class="hide-menu">Informes comunes</span>
                     </a>
-                    <ul aria-expanded="false" class="collapse first-level @if (isset($active['informes_comunes'])) in @endif">
-                        <li class="sidebar-item @if (isset($active['informes_comunes'])) active @endif">
-                            <a href="{{ route('informes_comunes.index') }}" class="sidebar-link @if (isset($active['informes_comunes'])) active @endif">
-                                <i class="fas fa-angle-double-right "></i>
-                                <span class="hide-menu">Informes comunes</span>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
+                @endif
+
+                @if (Backend::tiene_permiso('informes_avances_crear', $user->rol_id))
+                <li class="sidebar-item">
+                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{ route('informes_avances.index') }}" aria-expanded="false">
+                        <i class="fas fa-tasks"></i>
+                        <span class="hide-menu">Informes de avances</span>
+                    </a>
+                </li>
+                @endif
+
+                @if (Backend::tiene_permiso('notas_crear', $user->rol_id))
                 <li class="sidebar-item @if (isset($active['_notas'])) selected @endif">
                     <a class="sidebar-link has-arrow waves-effect waves-dark @if (isset($active['_notas'])) active @endif" href="javascript:void(0)
                            " aria-expanded="false">
@@ -65,33 +70,54 @@
                         <span class="hide-menu">Notas</span>
                     </a>
                     <ul aria-expanded="false" class="collapse first-level @if (isset($active['_notas'])) in @endif">
+                        
+                        @if (Backend::tiene_permiso('notas_crear', $user->rol_id))
                         <li class="sidebar-item @if (isset($active['notas'])) active @endif">
                             <a href="{{ route('notas.index') }}" class="sidebar-link @if (isset($active['notas'])) active @endif">
                                 <i class="fas fa-angle-double-right "></i>
                                 <span class="hide-menu">Notas</span>
                             </a>
                         </li>
+                        @endif
+
+                        @if (Backend::tiene_permiso('tipo_notas_crear', $user->rol_id))
                         <li class="sidebar-item @if (isset($active['tipo_notas'])) active @endif">
                             <a href="{{ route('tipo_notas.index') }}" class="sidebar-link @if (isset($active['tipo_notas'])) active @endif">
                                 <i class="fas fa-angle-double-right "></i>
                                 <span class="hide-menu">Tipo de notas</span>
                             </a>
                         </li>
+                        @endif
+                        
                     </ul>
                 </li>
+                @endif
 
-                @if ($user->rol_id == 1)
+                @if ($user->rol_id == 1 || $user->rol_id == 2)
+
                     <li class="nav-small-cap">
                         <i class="mdi mdi-dots-horizontal"></i>
                         <span class="hide-menu">Configuración</span>
                     </li>
-
+                    
+                    @if (Backend::tiene_permiso('usuarios_crear', $user->rol_id))
                     <li class="sidebar-item @if (isset($active['usuarios'])) selected @endif">
                         <a class="sidebar-link waves-effect waves-dark sidebar-link @if (isset($active['usuarios'])) active @endif" href="{{ route('usuarios.index') }}" aria-expanded="false">
                             <i class="fas fa-users"></i>
                             <span class="hide-menu">Usuarios</span>
                         </a>
                     </li>
+                    @endif
+
+                    @if (Backend::tiene_permiso('roles_crear', $user->rol_id))
+                    <li class="sidebar-item @if (isset($active['roles'])) selected @endif">
+                        <a class="sidebar-link waves-effect waves-dark sidebar-link @if (isset($active['roles'])) active @endif" href="{{ route('roles.index') }}" aria-expanded="false">
+                            <i class="fas fa-user-circle"></i>
+                            <span class="hide-menu">Roles</span>
+                        </a>
+                    </li>
+                    @endif
+
                 @endif
             </ul>
         </nav>
